@@ -1,0 +1,38 @@
+
+X=load("lstm/trainX_lstm.mat").trainX_lstm;
+Y=load("lstm/trainY_lstm.mat").trainY_lstm;
+
+autoenc=trainAutoencoder(X,10,'MaxEpochs',10,...
+'DecoderTransferFunction','purelin');
+
+newX=encode(autoenc,X);
+
+
+trainX_lstm=num2cell(X,1);
+trainY_lstm=categorical(Y,1);
+
+numHiddenUnits=100;
+numClasses=4;
+[numFeatures,~]=size(newX);
+
+layers=[
+    sequenceInputLayer(numFeatures)
+    lstmLayer(numHiddenUnits,'OutputMode','last')
+    fullyConnectedLayer(numClasses)
+    softmaxLayer
+    classificationLayer
+    ]
+
+    maxEpc=20;
+    el
+options = trainingOptions('adam', ...
+    'MaxEpochs',maxEpc, ...
+    'GradientThreshold',1, ...
+    'Plots','training-progress', ...
+    'MiniBatchSize',100, ...
+    'InitialLearnRate',0.1, ...
+    'Verbose',0, ...
+    'ExecutionEnvironment','cpu');
+
+net=trainNetwork(trainX_lstm,trainY_lstm,layers,options);
+
